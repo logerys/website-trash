@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="pageTitle">Logerys</title>
+    <!-- Zahrnutí Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Zahrnutí Font Awesome pro ikony sociálních sítí -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Fonty pro profesionální a tech vzhled -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oxanium:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <style>
+        :root {
+            /* Definice hlavních barev, ale nyní je budeme primárně používat pro gradienty */
+            --gradient-start: #5e17eb; /* Hluboká fialová */
+            --gradient-middle: #8a2be2; /* Střední fialová/modrá */
+            --gradient-end: #ff1493;   /* Živá růžová/fuchsia */
+            --text-light: #e2e8f0;
+            --text-medium: #cbd5e1;
+            --bg-dark: #1a202c;
+            --bg-darker: #0f172a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            position: relative;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Oxanium', sans-serif;
+        }
+
+        /* Dynamické pozadí s obrázkem a animovaným překrytím */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -2;
+            /* Placeholder obrázek - nahraďte vlastním kvalitným FiveM obrázkem */
+            background-image: url('https://placehold.co/1920x1080/0d1117/334155?text=DYNAMIC FIVE M CITYSCAPE');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.5) contrast(1.3);
+            opacity: 0.3;
+            animation: fadeInBackground 4s ease-out forwards;
+        }
+
+        /* Tmavé překrytí pro lepší čitelnost textu */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background-color: rgba(0, 0, 0, 0.7); /* Tmavší překrytí */
+        }
+
+        /* Animace pro hlavní kontejner - vyblednutí a posunutí nahoru */
+        @keyframes fadeInContent {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animace pro pozadí - postupné zobrazení */
+        @keyframes fadeInBackground {
+            from { opacity: 0; }
+            to { opacity: 0.3; }
+        }
+
+        /* Animace pro vstup sekcí při scrollu */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* VYLEPŠENÝ STYL PRO ANIMOVANÉ KARTY */
+        .card-animation {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Hlubší, ale jemnější stín */
+            /* Původní fialový okraj */
+            border: 1px solid rgba(94, 23, 235, 0.2);
+            background-color: var(--bg-darker); /* Jednotné tmavé pozadí karet */
+        }
+
+        /* Pseudo-element pro animovaný okraj */
+        .card-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid transparent;
+            pointer-events: none;
+            transition: border-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1;
+        }
+
+        /* Nový pseudo-element pro "odlesk" (glare effect) */
+        .card-animation::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 50%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1); /* Světlý, průhledný gradient */
+            transform: rotate(30deg); /* Diagonální odlesk */
+            transition: transform 0.5s ease-out;
+            pointer-events: none;
+            opacity: 0; /* Skrytý, dokud se nenajede myší */
+        }
+
+        .card-animation:hover {
+            transform: translateY(-15px) scale(1.05) rotateZ(-1deg); /* Větší posun, zvětšení a jemná rotace */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8); /* Silnější, ale elegantní stín */
+            border-color: transparent;
+            z-index: 10;
+        }
+        .card-animation:hover::before {
+            /* Gradientní ohraničení při najetí */
+            border-image: linear-gradient(to right, var(--gradient-start), var(--gradient-middle), var(--gradient-end)) 1;
+            border-image-slice: 1;
+            transform: scale(1.06);
+        }
+        .card-animation:hover::after {
+            transform: translateX(200%) rotate(30deg); /* Odlesk přejede zleva doprava */
+            opacity: 1; /* Odlesk se zobrazí */
+        }
+
+        /* Styl pro primární tlačítka */
+        .btn-primary {
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(94, 23, 235, 0.4); /* Jemný fialový stín */
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end)); /* Gradientní pozadí */
+        }
+        .btn-primary:hover {
+            background-color: #6d28d9; /* Tmavší fialová, jako fallback pro non-gradient hover */
+            background: linear-gradient(to right, #8a2be2, #ff69b4); /* Jemně posunutý gradient při najetí */
+            transform: translateY(-5px); /* Větší posun */
+            box-shadow: 0 10px 25px rgba(94, 23, 235, 0.7); /* Silnější stín */
+        }
+
+        /* Ikonky sociálních sítí */
+        .social-icon {
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+        }
+        .social-icon:hover {
+            color: var(--gradient-end); /* Zářivá růžová při najetí */
+            transform: scale(1.4); /* Větší zvětšení */
+            text-shadow: 0 0 15px var(--gradient-end), 0 0 25px rgba(255, 20, 147, 0.4); /* Jemný stín */
+        }
+
+        /* Klíčové snímky pro pulzující pozadí */
+        @keyframes pulseBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Malé pulzující kroužky/efekty (jako drobnosti) */
+        .pulse-dot {
+            position: absolute;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end)); /* Gradient */
+            border-radius: 50%;
+            animation: pulse 2s infinite ease-in-out;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .pulse-dot.dot-lg { width: 40px; height: 40px; }
+        .pulse-dot.dot-md { width: 25px; height: 25px; }
+        .pulse-dot.dot-sm { width: 15px; height: 15px; }
+
+        @keyframes pulse {
+            0% { transform: scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Skryté prvky pro JS animaci */
+        .hidden-until-load {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .hidden-until-load.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Sticky navigace */
+        .navbar-scrolled {
+            background-color: rgba(15, 23, 42, 0.9); /* tmavší pozadí pro scroll */
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Jazykový přepínač */
+        .lang-menu-toggle {
+            background-color: transparent;
+            border: 1px solid var(--gradient-start); /* Fialový okraj */
+            color: var(--gradient-start); /* Fialový text */
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+        .lang-menu-toggle:hover {
+            background-color: rgba(94, 23, 235, 0.1); /* Jemný fialový podklad */
+            color: var(--gradient-middle); /* Světlejší fialová */
+            border-color: var(--gradient-middle);
+            box-shadow: 0 0 10px rgba(94, 23, 235, 0.3);
+        }
+        .lang-menu-toggle .fas.fa-chevron-down {
+            transition: transform 0.3s ease-in-out;
+        }
+        .lang-menu-toggle.is-open .fas.fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .lang-dropdown {
+            background-color: var(--bg-darker);
+            border: 1px solid rgba(94, 23, 235, 0.3); /* Fialový okraj */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            transition: all 0.2s ease-out;
+        }
+        .lang-dropdown.is-open {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .lang-dropdown .lang-option {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .lang-dropdown .lang-option:hover {
+            background-color: rgba(94, 23, 235, 0.15); /* Jemný fialový podklad */
+            color: var(--gradient-start); /* Fialový text */
+        }
+        .lang-dropdown .lang-option.active {
+            background-color: rgba(94, 23, 235, 0.25); /* Tmavší fialový podklad */
+            color: var(--gradient-start); /* Fialový text */
+            font-weight: 600;
+        }
+
+        /* Animace pro jméno Logerys v navbaru */
+        .navbar-name {
+            display: inline-block;
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+            text-shadow: 0 0 5px var(--gradient-start), 0 0 10px var(--gradient-end); /* Jemný počáteční glow */
+            animation: navbarNamePulse 2s infinite alternate; /* Nová animace */
+        }
+        .navbar-name:hover {
+            color: var(--gradient-middle); /* Světlejší fialová při najetí */
+            transform: translateY(-2px) scale(1.03);
+            text-shadow: 0 0 15px var(--gradient-start), 0 0 25px var(--gradient-end); /* Silnější glow */
+        }
+
+        /* Keyframes pro pulzující animaci jména v navbaru */
+        @keyframes navbarNamePulse {
+            0% { text-shadow: 0 0 5px var(--gradient-start), 0 0 10px var(--gradient-end); }
+            50% { text-shadow: 0 0 10px var(--gradient-middle), 0 0 20px var(--gradient-end); }
+            100% { text-shadow: 0 0 5px var(--gradient-start), 0 0 10px var(--gradient-end); }
+        }
+
+        /* Nové styly pro ikonu v hero sekci */
+        .hero-icon {
+            font-size: 5rem;
+            color: var(--gradient-middle); /* Barva z gradientu */
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 15px var(--gradient-start), 0 0 30px var(--gradient-end), 0 0 50px rgba(255, 255, 255, 0.1);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 15px var(--gradient-start), 0 0 30px var(--gradient-end), 0 0 50px rgba(255, 255, 255, 0.1); }
+            100% { text-shadow: 0 0 20px var(--gradient-middle), 0 0 40px var(--gradient-end), 0 0 60px rgba(255, 255, 255, 0.2); }
+        }
+
+        /* Nové styly pro pozdrav v hero sekci */
+        .hero-greeting {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Styl pro canvas s částicemi */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Pod obsahem hero sekce */
+        }
+
+        /* Animace pro ohraničení hero boxu */
+        .hero-content-box { /* Cílí na div.z-10.bg-gray-900... */
+            position: relative;
+            z-index: 1; /* Aby byl nad canvasem a pozadím */
+            /* Gradientní okraj */
+            border: 2px solid;
+            border-image: linear-gradient(45deg, var(--gradient-start), var(--gradient-end)) 1;
+            border-image-slice: 1;
+            box-shadow: 0 0 15px var(--gradient-start); /* Počáteční jemná záře */
+            animation: heroBoxGlow 3s infinite alternate ease-in-out; /* Pulzující animace */
+        }
+
+        @keyframes heroBoxGlow {
+            0% { box-shadow: 0 0 15px var(--gradient-start); }
+            100% { box-shadow: 0 0 30px var(--gradient-end), 0 0 45px var(--gradient-start); } /* Vícenásobná záře */
+        }
+
+        /* Styly pro tabulky v sekci O mně */
+        .tab-button {
+            background-color: var(--bg-darker);
+            border: 1px solid var(--gradient-start); /* Fialový okraj */
+            color: var(--text-medium);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .tab-button:hover {
+            color: var(--gradient-start); /* Fialová */
+            border-color: var(--gradient-start); /* Fialová */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        .tab-button.active {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end)); /* Gradientní pozadí */
+            color: white;
+            border-color: var(--gradient-start); /* Fialová */
+            box-shadow: 0 4px 15px var(--gradient-start); /* Fialový stín */
+            transform: translateY(-2px);
+        }
+
+        .tab-pane {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            position: absolute;
+            width: calc(100% - 4rem); /* Adjust for padding of parent */
+            left: 2rem;
+            top: 2rem;
+        }
+        .tab-pane.active {
+            opacity: 1;
+            transform: translateY(0);
+            position: static;
+        }
+        .tab-content-container {
+            min-height: 250px; /* Ensure container has enough height to prevent collapse during transition */
+        }
+
+        /* Styling pro ikony v CS2 záložce */
+        .cs2-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 0.75rem;
+            border-radius: 50%;
+            /* Defaultní glow je nyní fialový gradientový */
+            box-shadow: 0 0 8px var(--gradient-start), inset 0 0 5px var(--gradient-end);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .cs2-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 12px var(--gradient-middle), inset 0 0 8px var(--gradient-end);
+        }
+
+        /* Specifické barvy glow pro jednotlivé ikony (zachovány pro odlišení) */
+        .cs2-icon.faceit-glow {
+             box-shadow: 0 0 8px rgba(255, 165, 0, 0.8), inset 0 0 5px rgba(255, 165, 0, 0.5); /* Orange/gold glow */
+        }
+        .cs2-icon.faceit-glow:hover {
+             box-shadow: 0 0 12px rgba(255, 165, 0, 1), inset 0 0 8px rgba(255, 165, 0, 0.8);
+        }
+        .cs2-icon.global-elite-glow {
+            box-shadow: 0 0 8px rgba(255, 223, 0, 0.8), inset 0 0 5px rgba(255, 223, 0, 0.5); /* Gold glow */
+        }
+        .cs2-icon.global-elite-glow:hover {
+            box-shadow: 0 0 12px rgba(255, 223, 0, 1), inset 0 0 8px rgba(255, 223, 0, 0.8);
+        }
+        .cs2-icon.esea-glow {
+            box-shadow: 0 0 8px rgba(51, 102, 255, 0.8), inset 0 0 5px rgba(51, 102, 255, 0.5); /* Blue glow */
+        }
+        .cs2-icon.esea-glow:hover {
+            box-shadow: 0 0 12px rgba(51, 102, 255, 1), inset 0 0 8px rgba(51, 102, 255, 0.8);
+        }
+        .cs2-icon.team-glow {
+            box-shadow: 0 0 8px rgba(128, 0, 128, 0.8), inset 0 0 5px rgba(128, 0, 128, 0.5); /* Purple glow */
+        }
+        .cs2-icon.team-glow:hover {
+            box-shadow: 0 0 12px rgba(128, 0, 128, 1), inset 0 0 8px rgba(128, 0, 128, 0.8);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navigační lišta -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="#hero" class="text-2xl font-bold text-purple-400 hover:text-purple-300 transition-colors duration-300 navbar-name">
+                Logerys
+            </a>
+            <nav class="flex items-center space-x-6">
+                <ul class="flex space-x-6 text-lg">
+                    <li><a href="#about" class="text-gray-300 hover:text-purple-400 transition-colors duration-300" data-lang-key="navAbout">O mně</a></li>
+                    <li><a href="#skills" class="text-gray-300 hover:text-purple-400 transition-colors duration-300" data-lang-key="navSkills">Dovednosti</a></li>
+                    <li><a href="#servers" class="text-gray-300 hover:text-purple-400 transition-colors duration-300" data-lang-key="navServers">Servery</a></li>
+                    <li><a href="#contact" class="text-gray-300 hover:text-purple-400 transition-colors duration-300" data-lang-key="navContact">Kontakt</a></li>
+                </ul>
+                <div class="relative">
+                    <button id="langToggleDesktop" class="lang-menu-toggle px-3 py-1 rounded-md transition-colors duration-200 font-semibold">
+                        <span data-lang-key="languageLabel">Jazyk</span> <i class="fas fa-chevron-down ml-2 text-sm transition-transform duration-300"></i>
+                    </button>
+                    <div id="langDropdownDesktop" class="lang-dropdown absolute right-0 mt-2 w-36 bg-gray-800 rounded-md shadow-lg py-1 z-20 origin-top-right">
+                        <button data-lang="cs" class="lang-option block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors duration-200" data-lang-key="csLabel">Čeština</button>
+                        <button data-lang="en" class="lang-option block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors duration-200" data-lang-key="enLabel">English</button>
+                        <button data-lang="pl" class="lang-option block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors duration-200" data-lang-key="plLabel">Polski</button>
+                        <button data-lang="de" class="lang-option block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors duration-200" data-lang-key="deLabel">Němčina</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hlavní obsah stránky -->
+    <main class="flex-grow">
+        <!-- Hero Sekce -->
+        <section id="hero" class="relative flex items-center justify-center min-h-screen text-center p-4">
+            <!-- Canvas pro částice -->
+            <canvas id="particles-js" class="absolute inset-0"></canvas>
+            <div class="z-10 bg-gray-900 bg-opacity-80 rounded-xl p-8 md:p-12 max-w-3xl border border-purple-700/50 shadow-2xl animate-on-scroll hero-content-box">
+                <i class="fas fa-terminal hero-icon"></i>
+                <h2 class="hero-greeting" data-lang-key="heroGreeting">Ahoj, jsem Logerys</h2>
+                <p class="text-xl md:text-2xl text-gray-300 leading-relaxed mb-8" data-lang-key="heroSubtitle">
+                    Jsem <span class="font-semibold text-purple-300">FiveM Developer a Web Developer</span> s vášní pro vytváření a správu dynamických herních zážitků. Pojďte prozkoumat mé projekty a dovednosti.
+                </p>
+                <a href="#servers" class="btn-primary inline-block text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg" data-lang-key="exploreServers">
+                    Prozkoumat servery <i class="fas fa-arrow-down ml-2"></i>
+                </a>
+            </div>
+            <!-- Malé "drobnosti" - pulzující tečky (pokud je budete chtít i s částicemi) -->
+            <!-- <div class="pulse-dot dot-lg top-1/4 left-1/4"></div>
+            <div class="pulse-dot dot-md bottom-1/3 right-1/4"></div>
+            <div class="pulse-dot dot-sm top-1/2 left-3/4"></div> -->
+        </section>
+
+        <!-- Sekce "O mně" -->
+        <section id="about" class="py-20 bg-gray-900 border-t border-b border-purple-800/30 animate-on-scroll">
+            <div class="container mx-auto max-w-4xl px-4 text-center">
+                <h2 class="text-4xl font-bold text-purple-400 mb-6" data-lang-key="aboutMeTitle">
+                    O mně
+                </h2>
+
+                <!-- Tab Buttons -->
+                <div class="flex justify-center mb-8 space-x-4">
+                    <button class="tab-button active px-6 py-2 rounded-full font-semibold transition-all duration-300" data-tab="general" data-lang-key="generalTabLabel">Obecné</button>
+                    <button class="tab-button px-6 py-2 rounded-full font-semibold transition-all duration-300" data-tab="cs2" data-lang-key="cs2TabLabel">CS2 Zkušenosti</button>
+                </div>
+
+                <!-- Tab Content Container -->
+                <div id="tab-content-container" class="relative bg-gray-800 rounded-xl p-6 md:p-8 border border-purple-700/50 shadow-xl overflow-hidden min-h-[300px]">
+                    <!-- General Tab Content -->
+                    <div id="general-content" class="tab-pane active grid grid-cols-1 md:grid-cols-2 gap-10 items-center text-left text-gray-300 leading-relaxed">
+                        <div>
+                            <p class="mb-4" data-lang-key="aboutMeText1">
+                                Jmenuji se Logerys a jsem přibližně 5 až 6 let zkušený FiveM a Web Developer. Mám hluboké znalosti a praxi ve vývoji webových stránek, správě serverů a Lua programování pro FiveM.
+                            </p>
+                            <p class="mb-4" data-lang-key="aboutMeText2">
+                                Mým cílem je vytvářet inovativní a stabilní systémy, které posouvají hranice možností v prostředí FiveM a přinášejí hráčům nezapomenutelné zážitky.
+                            </p>
+                            <p data-lang-key="aboutMeText3">
+                                Vždy se snažím o čistý kód, efektivní řešení a perfektní uživatelskou zkušenost. Rád se učím nové technologie a jsem otevřený/á novým výzvám.
+                            </p>
+                        </div>
+                        <div class="flex justify-center">
+                            <!-- Placeholder pro fotku, nahraďte URL vlastní fotkou -->
+                            <img src="https://i.imgur.com/jRDZSIS.png" alt="Profilová fotka Logerys" class="rounded-full border-4 border-purple-500 shadow-xl transition-transform duration-500 hover:scale-105">
+                        </div>
+                    </div>
+
+                    <!-- CS2 Tab Content -->
+                    <div id="cs2-content" class="tab-pane hidden text-left text-gray-300 leading-relaxed">
+                        <p class="mb-4" data-lang-key="cs2IntroText">
+                            Mimo vývoj se aktivně věnuji kompetitivnímu hraní CS2, kde jsem dosáhl významných úspěchů:
+                        </p>
+                        <ul class="list-none space-y-2 pl-4">
+                            <li class="flex items-center text-lg">
+                                <img src="https://ih1.redbubble.net/image.5850439763.4523/raf,360x360,075,t,fafafa:ca443f4786.jpg" alt="Faceit LVL 10 Rank Icon" class="cs2-icon faceit-glow">
+                                <span data-lang-key="cs2FaceitText">Faceit LVL 10, peak ELO 3000</span>
+                            </li>
+                            <li class="flex items-center text-lg">
+                                <img src="https://ih1.redbubble.net/image.5041998780.0626/st,small,845x845-pad,1000x1000,f8f8f8.u2.jpg" alt="Global Elite Rank Icon" class="cs2-icon global-elite-glow">
+                                <span data-lang-key="cs2GlobalEliteText">Global Elite v Matchmakingu a Wingmanu</span>
+                            </li>
+                            <li class="flex items-center text-lg">
+                                <img src="https://cdn.iconscout.com/icon/free/png-256/free-esea-logo-icon-download-in-svg-png-gif-file-formats--technology-social-media-company-vol-2-pack-logos-icons-3029979.png" alt="ESEA Rank Icon" class="cs2-icon esea-glow">
+                                <span data-lang-key="cs2EseaText">Účast v ESEA ligách (dosaženo ESEA C+)</span>
+                            </li>
+                            <li class="flex items-center text-lg">
+                                <img src="https://placehold.co/32x32/800080/ffffff?text=TEAM" alt="Semi-Pro Team Icon" class="cs2-icon team-glow">
+                                <span data-lang-key="cs2TeamsText">Hraní za semiprofesionální týmy v CS2</span>
+                            </li>
+                        </ul>
+                        <p class="mt-4 text-gray-400 italic" data-lang-key="cs2ClosingText">
+                            Tyto zkušenosti mi pomohly rozvinout analytické myšlení, rychlé rozhodování a týmovou práci, což jsou cenné dovednosti i v mých developerských projektech.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekce "Dovednosti a Zkušenosti" -->
+        <section id="skills" class="py-20 animate-on-scroll">
+            <div class="container mx-auto max-w-4xl px-4 text-center">
+                <h2 class="text-4xl font-bold text-purple-400 mb-10" data-lang-key="skillsTitle">
+                    Dovednosti a Zkušenosti
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-gray-300">
+                    <!-- Dovednosti -->
+                    <div>
+                        <h3 class="text-3xl font-semibold text-purple-300 mb-6 border-b border-purple-600 pb-2 inline-block" data-lang-key="skillsSubtitle">Dovednosti</h3>
+                        <ul class="list-none space-y-4 text-left">
+                            <li class="flex items-center text-lg"><i class="fas fa-code text-purple-400 mr-3"></i><span data-lang-key="skillWebDev">Web Development (HTML5, CSS3, JavaScript)</span></li>
+                            <li class="flex items-center text-lg"><i class="fas fa-terminal text-purple-400 mr-3"></i><span data-lang-key="skillFiveMScripting">FiveM Scripting (Lua 5.4, Overextended lib / ESX)</span></li>
+                            <li class="flex items-center text-lg"><i class="fas fa-database text-purple-400 mr-3"></i><span data-lang-key="skillDatabase">Database Management (SQL, MySQL)</span></li>
+                            <li class="flex items-center text-lg"><i class="fas fa-server text-purple-400 mr-3"></i><span data-lang-key="skillServerAdmin">Server Administration & Optimization</span></li>
+                            <li class="flex items-center text-lg"><i class="fas fa-gamepad text-purple-400 mr-3"></i><span data-lang-key="skillGameModding">Game Modding & Asset Integration</span></li>
+                            <li class="flex items-center text-lg"><i class="fas fa-project-diagram text-purple-400 mr-3"></i><span data-lang-key="skillProjectMgmt">Project Management & Collaboration</span></li>
+                            <li><span class="text-gray-400 italic" data-lang-key="skillMore">...a další</span></li>
+                        </ul>
+                    </div>
+                    <!-- Zkušenosti -->
+                    <div>
+                        <h3 class="text-3xl font-semibold text-purple-300 mb-6 border-b border-purple-600 pb-2 inline-block" data-lang-key="experienceSubtitle">Zkušenosti</h3>
+                        <div class="space-y-6 text-left">
+                            <div>
+                                <h4 class="text-xl font-semibold text-white" data-lang-key="expFiveMDevTitle">FiveM Script Developer</h4>
+                                <p class="text-gray-400 text-sm" data-lang-key="expFiveMDevTime">Na volné noze | Současnost</p>
+                                <p class="text-gray-300 mt-2" data-lang-key="expFiveMDevDesc">Vývoj custom skriptů a systémů pro rozsáhlé FiveM servery, optimalizace výkonu a správa herní logiky. Zodpovědnost za bezchybný chod klíčových herních prvků.</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-white" data-lang-key="expCommunityMgmtTitle">Community Manager & Admin</h4>
+                                <p class="text-gray-400 text-sm" data-lang-key="expCommunityMgmtTime">Dřívější projekty</p>
+                                <p class="text-gray-300 mt-2" data-lang-key="expCommunityMgmtDesc">Správa komunity, podpora hráčů a řešení technických problémů. Organizace eventů a udržování pozitivního herního prostředí.</p>
+                            </div>
+                            <!-- Můžete přidat další záznamy zkušeností -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekce "Servery, na kterých jsem pracoval/a" -->
+        <section id="servers" class="py-20 bg-gray-900 border-t border-b border-purple-800/30 animate-on-scroll">
+            <div class="container mx-auto max-w-4xl px-4 text-center">
+                <h2 class="text-4xl font-bold text-purple-400 mb-10" data-lang-key="serversTitle">
+                    Servery, na kterých jsem pracoval/a
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Karta Serveru 1 -->
+                    <div class="p-6 rounded-lg shadow-lg card-animation text-white">
+                        <h3 class="text-2xl font-bold mb-3" data-lang-key="server1Name">OneWayRP</h3>
+                        <p class="text-sm text-gray-200 mb-4 h-20 overflow-hidden server-description" data-lang-key="server1Desc">
+                            Rozsáhlý Roleplay server zaměřený na propracovanou ekonomiku a detailní frakce. Měl jsem zde na starosti vývoj a implementaci dynamického bankovního systému a inventáře.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+                            <a href="https://discord.gg/yourinvitecode1" target="_blank" class="inline-block bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-5 rounded-full text-base shadow-md transition-all duration-300 transform hover:scale-105">
+                                <i class="fab fa-discord mr-2"></i> <span data-lang-key="joinDiscord">Připojit se</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Karta Serveru 2 -->
+                    <div class="p-6 rounded-lg shadow-lg card-animation text-white">
+                        <h3 class="text-2xl font-bold mb-3" data-lang-key="server2Name">Pohodáři RP</h3>
+                        <p class="text-sm text-gray-200 mb-4 h-20 overflow-hidden server-description" data-lang-key="server2Desc">
+                            Největší CZ/SK FiveM server s kvalitním RP, aktivní komunitou a vlastními skripty.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+                            <a href="https://discord.gg/yourinvitecode2" target="_blank" class="inline-block bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-5 rounded-full text-base shadow-md transition-all duration-300 transform hover:scale-105">
+                                <i class="fab fa-discord mr-2"></i> <span data-lang-key="joinDiscord">Připojit se</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Karta Serveru 3 -->
+                    <div class="p-6 rounded-lg shadow-lg card-animation text-white">
+                        <h3 class="text-2xl font-bold mb-3" data-lang-key="server3Name">Los Santos Revamped</h3>
+                        <p class="text-sm text-gray-200 mb-4 h-20 overflow-hidden server-description" data-lang-key="server3Desc">
+                            PvP a Freeroam server s důrazem na optimalizaci a unikátní herní mechaniky. Moje práce zahrnovala vývoj anti-cheat systémů a custom vozidel s unikátními schopnostmi.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+                            <a href="https://discord.gg/yourinvitecode2" target="_blank" class="inline-block bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-5 rounded-full text-base shadow-md transition-all duration-300 transform hover:scale-105">
+                                <i class="fab fa-discord mr-2"></i> <span data-lang-key="joinDiscord">Připojit se</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patička (Footer) se sociálními sítěmi -->
+    <footer id="contact" class="bg-gray-950 text-white py-12 px-4 border-t border-purple-800/30">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h3 class="text-2xl font-semibold text-purple-400 mb-6" data-lang-key="contactTitle">
+                Spojte se se mnou
+            </h3>
+            <div class="flex justify-center space-x-8 mb-8">
+                <!-- Twitch -->
+                <a href="https://twitch.tv/logerys_" target="_blank" class="social-icon text-gray-400">
+                    <i class="fab fa-twitch fa-3x"></i>
+                </a>
+                <!-- GitHub -->
+                <a href="https://github.com/reworked0" target="_blank" class="social-icon text-gray-400">
+                    <i class="fab fa-github fa-3x"></i>
+                </a>
+                <!-- Instagram -->
+                <a href="https://instagram.com/icysaminamina" target="_blank" class="social-icon text-gray-400">
+                    <i class="fab fa-instagram fa-3x"></i>
+                </a>
+            </div>
+            <p class="text-gray-500 text-sm" data-lang-key="footerCopy">
+                &copy; 2025 Logerys. Všechna práva vyhrazena.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Objekt s překlady
+        const translations = {
+            pageTitle: {
+                cs: "Logerys",
+                en: "Logerys",
+                pl: "Logerys",
+                de: "Logerys"
+            },
+            heroTitle: {
+                cs: "Vítejte na mé stránce",
+                en: "Welcome to My Page",
+                pl: "Witaj na mojej stronie",
+                de: "Willkommen auf meiner Seite"
+            },
+            heroSubtitle: {
+                cs: 'Jsem <span class="font-semibold text-purple-300">FiveM Developer a Web Developer</span> s vášní pro vytváření a správu dynamických herních zážitků. Pojďte prozkoumat mé projekty a dovednosti.',
+                en: 'I\'m a <span class="font-semibold text-purple-300">FiveM Developer and Web Developer</span> passionate about creating and managing dynamic gaming experiences. Explore my projects and skills.',
+                pl: 'Jestem <span class="font-semibold text-purple-300">deweloperem FiveM i stron internetowych</span> z pasją do tworzenia i zarządzania dynamicznymi wrażeniami z gier. Zapraszam do zapoznania się z moimi projektami i umiejętnościami.',
+                de: 'Ich bin ein <span class="font-semibold text-purple-300">FiveM-Entwickler und Webentwickler</span> mit einer Leidenschaft für die Erstellung und Verwaltung dynamischer Spielerlebnisse. Entdecken Sie meine Projekte und Fähigkeiten.'
+            },
+            exploreServers: {
+                cs: "Prozkoumat servery",
+                en: "Explore Servers",
+                pl: "Przeglądaj serwery",
+                de: "Server erkunden"
+            },
+            navAbout: {
+                cs: "O mně",
+                en: "About Me",
+                pl: "O mnie",
+                de: "Über mich"
+            },
+            navSkills: {
+                cs: "Dovednosti",
+                en: "Skills",
+                pl: "Umiejętności",
+                de: "Fähigkeiten"
+            },
+            navServers: {
+                cs: "Servery",
+                en: "Servers",
+                pl: "Serwery",
+                de: "Server"
+            },
+            navContact: {
+                cs: "Kontakt",
+                en: "Contact",
+                pl: "Kontakt",
+                de: "Kontakt"
+            },
+            heroGreeting: {
+                cs: "Ahoj, jsem Logerys",
+                en: "Hi, I'm Logerys",
+                pl: "Cześć, jestem Logerys",
+                de: "Hallo, ich bin Logerys"
+            },
+            aboutMeTitle: {
+                cs: "O mně",
+                en: "About Me",
+                pl: "O mnie",
+                de: "Über mich"
+            },
+            aboutMeText1: {
+                cs: "Jmenuji se Logerys a jsem přibližně 5 až 6 let zkušený FiveM a Web Developer. Mám hluboké znalosti a praxi ve vývoji webových stránek, správě serverů a Lua programování pro FiveM.",
+                en: "My name is Logerys and I am an experienced FiveM and Web Developer with approximately 5 to 6 years of experience. I have in-depth knowledge and practice in web development, server management, and Lua programming for FiveM."
+            },
+            aboutMeText2: {
+                cs: "Mým cílem je vytvářet inovativní a stabilné systémy, které posouvají hranice možností v prostředí FiveM a přinášejí hráčům nezapomenutelné zážitky.",
+                en: "My goal is to create innovative and stable systems that push the boundaries of possibilities in the FiveM environment and bring unforgettable experiences to players."
+            },
+            aboutMeText3: {
+                cs: "Vždy se snažím o čistý kód, efektivní řešení a perfektní uživatelskou zkušenost. Rád se učím nové technologie a jsem otevřený/á novým výzvám.",
+                en: "I always strive for clean code, efficient solutions, and a perfect user experience. I enjoy learning new technologies and am open to new challenges."
+            },
+            aboutMeText4: {
+                cs: "Mimo vývoj se aktivně věnuji kompetitivnímu hraní CS2, kde jsem dosáhl Faceit LVL 10 s peak ELO 3000 a hrál za semiprofesionální týmy.",
+                en: "Beyond development, I'm actively involved in competitive CS2 gaming, having achieved Faceit LVL 10 with a peak ELO of 3000 and played for semi-professional teams.",
+                pl: "Poza deweloperskim światem, aktywnie angażuję się w rywalizację w CS2, gdzie osiągnąłem Faceit LVL 10 z maksymalnym ELO 3000 i grałem w półprofesjonalnych drużynach.",
+                de: "Neben der Entwicklung bin ich aktiv im kompetitiven CS2-Gaming tätig, habe Faceit LVL 10 mit einem Peak-ELO von 3000 erreicht und für semiprofessionelle Teams gespielt."
+            },
+            cs2IntroText: {
+                cs: "Mimo vývoj se aktivně věnuji kompetitivnímu hraní CS2, kde jsem dosáhl významných úspěchů:",
+                en: "Beyond development, I'm actively involved in competitive CS2 gaming, where I've achieved significant milestones:",
+                pl: "Poza deweloperskim światem, aktywnie angażuję się w rywalizację w CS2, gdzie osiągnąłem znaczące sukcesy:",
+                de: "Neben der Entwicklung bin ich aktiv im kompetitiven CS2-Gaming tätig, wo ich bedeutende Erfolge erzielt habe:"
+            },
+            cs2FaceitText: {
+                cs: "Faceit LVL 10, peak ELO 3000",
+                en: "Faceit LVL 10, peak ELO 3000",
+                pl: "Faceit LVL 10, szczytowe ELO 3000",
+                de: "Faceit LVL 10, Peak ELO 3000"
+            },
+            cs2GlobalEliteText: {
+                cs: "Global Elite v Matchmakingu a Wingmanu",
+                en: "Global Elite in Matchmaking and Wingman",
+                pl: "Global Elite w Matchmakingu i Wingmanie",
+                de: "Global Elite in Matchmaking und Wingman"
+            },
+            cs2EseaText: {
+                cs: "Účast v ESEA ligách (dosaženo ESEA C+)",
+                en: "Participation in ESEA leagues (achieved ESEA C+)",
+                pl: "Udział w ligach ESEA (osiągnięto ESEA C+)",
+                de: "Teilnahme an ESEA-Ligen (ESEA C+ erreicht)"
+            },
+            cs2TeamsText: {
+                cs: "Hraní za semiprofesionální týmy v CS2",
+                en: "Playing for semi-professional teams in CS2",
+                pl: "Gra w półprofesjonalnych drużynach CS2",
+                de: "Spiel für semiprofessionelle Teams in CS2"
+            },
+            cs2ClosingText: {
+                cs: "Tyto zkušenosti mi pomohly rozvinout analytické myšlení, rychlé rozhodování a týmovou práci, což jsou cenné dovednosti i v mých developerských projektech.",
+                en: "These experiences have helped me develop analytical thinking, quick decision-making, and teamwork, which are valuable skills in my development projects as well.",
+                pl: "Te doświadczenia pomogły mi rozwinąć analityczne myšlení, szybkie podejmowanie decyzji i pracę zespołową, co jest cennými umiejętnošciami również w moich projektach deweloperských.",
+                de: "Diese Erfahrungen haben mir geholfen, analytisches Denken, schnelle Entscheidungsfindung und Teamwork zu entwickeln, was auch in meinen Entwicklungsprojekten wertvolle Fähigkeiten sind."
+            },
+            skillsTitle: {
+                cs: "Dovednosti a Zkušenosti",
+                en: "Skills & Experience",
+                pl: "Umiejętności i Doświadczenie",
+                de: "Fähigkeiten & Erfahrung"
+            },
+            skillsSubtitle: {
+                cs: "Dovednosti",
+                en: "Skills",
+                pl: "Umiejętności",
+                de: "Fähigkeiten"
+            },
+            experienceSubtitle: {
+                cs: "Zkušenosti",
+                en: "Experience",
+                pl: "Doświadczenie",
+                de: "Erfahrung"
+            },
+            skillWebDev: {
+                cs: "Web Development (HTML5, CSS3, JavaScript)",
+                en: "Web Development (HTML5, CSS3, JavaScript)",
+                pl: "Tworzenie stron internetowych (HTML5, CSS3, JavaScript)",
+                de: "Webentwicklung (HTML5, CSS3, JavaScript)"
+            },
+            skillFiveMScripting: {
+                cs: "FiveM Scripting (Lua 5.4, Overextended lib / ESX)",
+                en: "FiveM Scripting (Lua 5.4, Overextended lib / ESX)",
+                pl: "Skrypty FiveM (Lua 5.4, biblioteka Overextended / ESX)",
+                de: "FiveM Scripting (Lua 5.4, Overextended Lib / ESX)"
+            },
+            skillDatabase: {
+                cs: "Database Management (SQL, MySQL)",
+                en: "Database Management (SQL, MySQL)",
+                pl: "Zarządzanie bazami danych (SQL, MySQL)",
+                de: "Datenbankverwaltung (SQL, MySQL)"
+            },
+            skillServerAdmin: {
+                cs: "Server Administration & Optimization",
+                en: "Server Administration & Optimization",
+                pl: "Administracja i Optymalizacja Serwerów",
+                de: "Serveradministration & Optimierung"
+            },
+            skillGameModding: {
+                cs: "Game Modding & Asset Integration",
+                en: "Game Modding & Asset Integration",
+                pl: "Modyfikowanie gier i Integracja zasobów",
+                de: "Spiel-Modding & Asset-Integration"
+            },
+            skillProjectMgmt: {
+                cs: "Project Management & Collaboration",
+                en: "Project Management & Collaboration",
+                pl: "Zarządzanie Projektami i Współpraca",
+                de: "Projektmanagement & Zusammenarbeit"
+            },
+            skillMore: {
+                cs: "...a další",
+                en: "...and more",
+                pl: "...i wiele więcej",
+                de: "...und mehr"
+            },
+            expFiveMDevTitle: {
+                cs: "FiveM Script Developer",
+                en: "FiveM Script Developer",
+                pl: "Deweloper skryptów FiveM",
+                de: "FiveM Script-Entwickler"
+            },
+            expFiveMDevTime: {
+                cs: "Na volné noze | Současnost",
+                en: "Freelance | Present",
+                pl: "Freelancer | Obecnie",
+                de: "Freiberufler | Aktuell"
+            },
+            expFiveMDevDesc: {
+                cs: "Vývoj custom skriptů a systémů pro rozsáhlé FiveM servery, optimalizace výkonu a správa herní logiky. Zodpovědnost za bezchybný chod klíčových herních prvků.",
+                en: "Development of custom scripts and systems for large-scale FiveM servers, performance optimization, and game logic management. Responsible for the flawless operation of key game elements.",
+                pl: "Tworzenie niestandardowych skryptów i systemów dla dużych serwerów FiveM, optymalizacja wydajności i zarządzanie logiką gry. Odpowiedzialność za bezbłędne działanie kluczowych elementów gry.",
+                de: "Entwicklung benutzerdefinierter Skripte und Systeme für große FiveM-Server, Leistungsoptimierung und Verwaltung der Spiellogik. Verantwortung für den fehlerfreien Betrieb wichtiger Spielelemente."
+            },
+            expCommunityMgmtTitle: {
+                cs: "Community Manager & Admin",
+                en: "Community Manager & Admin",
+                pl: "Menedżer społeczności i Administrator",
+                de: "Community Manager & Admin"
+            },
+            expCommunityMgmtTime: {
+                cs: "Dřívější projekty",
+                en: "Past Projects",
+                pl: "Poprzednie projekty",
+                de: "Frühere Projekte"
+            },
+            expCommunityMgmtDesc: {
+                cs: "Správa komunity, podpora hráčů a řešení technických problémů. Organizace eventů a udržování pozitivního herního prostředí.",
+                en: "Community management, player support, and technical troubleshooting. Organizing events and maintaining a positive gaming environment.",
+                pl: "Zarządzanie społecznością, wsparcie graczy i rozwiązywanie problemów technicznych. Organizacja wydarzeń i utrzymanie pozytywnego środowiska gry.",
+                de: "Community-Management, Spieler-Support und technische Fehlerbehebung. Organisation von Events und Aufrechterhaltung einer positiven Spielumgebung."
+            },
+            serversTitle: {
+                cs: "Servery, na kterých jsem pracoval/a",
+                en: "Servers I've Worked On",
+                pl: "Serwery, nad którymi pracowałem/am",
+                de: "Server, an denen ich gearbeitet habe"
+            },
+            server1Name: {
+                cs: "OneWayRP",
+                en: "OneWayRP",
+                pl: "OneWayRP",
+                de: "OneWayRP"
+            },
+            server1Desc: {
+                cs: "Rozsáhlý Roleplay server zaměřený na propracovanou ekonomiku a detailní frakce. Měl jsem zde na starosti vývoj a implementaci dynamického bankovního systému a inventáře.",
+                en: "An extensive Roleplay server focused on elaborate economy and detailed factions. I was responsible for the development and implementation of a dynamic banking system and inventory here.",
+                pl: "Rozbudowany serwer Roleplay skupiający się na rozbudowanej ekonomii i szczegółowych frakcjach. Byłem odpowiedzialny za rozwój i implementację dynamicznego systemu bankowego i ekwipunku.",
+                de: "Ein umfangreicher Rollenspiel-Server, der sich auf eine ausgeklügelte Wirtschaft und detaillierte Fraktionen konzentriert. Ich war hier für die Entwicklung und Implementierung eines dynamischen Bankensystems und Inventars verantwortlich."
+            },
+            server2Name: {
+                cs: "Pohodáři RP",
+                en: "Pohodáři RP",
+                pl: "Pohodáři RP",
+                de: "Pohodáři RP"
+            },
+            server2Desc: {
+                cs: "Největší CZ/SK FiveM server s kvalitním RP, aktivní komunitou a vlastními skripty.",
+                en: "The largest CZ/SK FiveM server with quality RP, an active community, and custom scripts.",
+                pl: "Największy serwer FiveM CZ/SK z wysokiej jakości RP, aktywną społecznością i niestandardowymi skryptami.",
+                de: "Der größte CZ/SK FiveM-Server z wysokiej jakości RP, aktywną społecznością i niestandardowymi skryptami."
+            },
+            server3Name: {
+                cs: "Los Santos Revamped",
+                en: "Los Santos Revamped",
+                pl: "Los Santos Revamped",
+                de: "Los Santos Revamped"
+            },
+            server3Desc: {
+                cs: "PvP a Freeroam server s důrazem na optimalizaci a unikátní herní mechaniky. Moje práce zahrnovala vývoj anti-cheat systémů a custom vozidel s unikátními schopnostmi.",
+                en: "A PvP and Freeroam server emphasizing optimization and unique gameplay mechanics. My work included developing anti-cheat systems and custom vehicles with unique abilities.",
+                pl: "Serwer PvP i Freeroam z naciskiem na optymalizację i unikalne mechaniki gry. Moja praca obejmowała rozwój systemów anty-cheatowych i niestandardowych pojazdów z unikalnymi zdolnostmi.",
+                de: "Ein PvP- und Freeroam-Server mit Fokus na optymalizację i unikalne mechaniki gry. Moja praca obejmowała rozwój systemów anty-cheatowych i niestandardowych pojazdów z unikalnymi zdolnościami."
+            },
+            server4Name: {
+                cs: "San Andreas Legacy",
+                en: "San Andreas Legacy",
+                pl: "San Andreas Legacy",
+                de: "San Andreas Legacy"
+            },
+            server4Desc: {
+                cs: "Komunitní server s přátelskou atmosférou a pravidelnými eventy. Vytvořil jsem zde systém pro správu eventů a integraci externích API pro herní statistiky.",
+                en: "A community server with a friendly atmosphere and regular events. I created an event management system and integrated external APIs for game statistics here.",
+                pl: "Serwer społecznościowy z przyjazną atmosferą i regularnymi wydarzeniami. Stworzyłem system zarządzania wydarzeniami i zintegroval zewnętrzne API do statystyk gier.",
+                de: "Ein Community-Server mit freundlicher Atmosphäre i regularnymi wydarzeniami. Stworzyłem system zarządzania wydarzeniami i zintegroval zewnętrzne API do statystyk gier."
+            },
+            joinDiscord: {
+                cs: "Připojit se",
+                en: "Join Discord",
+                pl: "Dołącz do Discorda",
+                de: "Discord beitreten"
+            },
+            contactTitle: {
+                cs: "Spojte se se mnou",
+                en: "Connect with Me",
+                pl: "Skontaktuj się ze mną",
+                de: "Kontaktieren Sie mich"
+            },
+            languageLabel: {
+                cs: "Jazyk",
+                en: "Language",
+                pl: "Język",
+                de: "Sprache"
+            },
+            csLabel: {
+                cs: "Čeština",
+                en: "Czech",
+                pl: "Czeski",
+                de: "Tschechisch"
+            },
+            enLabel: {
+                cs: "English",
+                en: "English",
+                pl: "Angielski",
+                de: "English"
+            },
+            plLabel: {
+                cs: "Polština",
+                en: "Polish",
+                pl: "Polski",
+                de: "Polnisch"
+            },
+            deLabel: {
+                cs: "Němčina",
+                en: "German",
+                pl: "Niemiecki",
+                de: "Deutsch"
+            },
+            generalTabLabel: {
+                cs: "Obecné",
+                en: "General",
+                pl: "Ogólne",
+                de: "Allgemein"
+            },
+            cs2TabLabel: {
+                cs: "CS2 Zkušenosti",
+                en: "CS2 Experience",
+                pl: "Doświadczenie w CS2",
+                de: "CS2 Erfahrung"
+            },
+            footerCopy: {
+                cs: "&copy; 2025 Logerys. Všechna práva vyhrazena.",
+                en: "&copy; 2025 Logerys. All rights reserved.",
+                pl: "&copy; 2025 Logerys. Wszelkie prawa zastrzeżone.",
+                de: "&copy; 2025 Logerys. Alle Rechte vorbehalten."
+            }
+        };
+
+        // Funkce pro nastavení jazyka
+        function setLanguage(lang) {
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (translations[key] && translations[key][lang]) {
+                    if (element.tagName === 'TITLE') {
+                        element.textContent = translations[key][lang];
+                    } else {
+                        element.innerHTML = translations[key][lang];
+                    }
+                }
+            });
+
+            // Aktualizovat aktivní třídy tlačítek jazyka
+            document.querySelectorAll('.lang-option').forEach(button => {
+                if (button.dataset.lang === lang) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
+            // Aktualizovat text na tlačítku přepínače jazyka
+            const langToggleButton = document.getElementById('langToggleDesktop');
+            if (langToggleButton) {
+                const labelSpan = langToggleButton.querySelector('span[data-lang-key="languageLabel"]');
+                if (labelSpan) {
+                    labelSpan.textContent = translations.languageLabel[lang]; // Only text, no flag
+                }
+            }
+
+            // Uložit preferenci jazyka
+            localStorage.setItem('selectedLanguage', lang);
+
+            // Aktualizovat atribut lang na html elementu
+            document.documentElement.lang = lang;
+        }
+
+        // Funkce pro přepínání záložek v sekci O mně
+        function showAboutTab(tabName) {
+            document.querySelectorAll('#tab-content-container .tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+                pane.classList.add('hidden');
+                pane.style.height = 'auto'; // Reset height for smooth transition
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            const selectedPane = document.getElementById(tabName + '-content');
+            const selectedButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
+
+            if (selectedPane && selectedButton) {
+                selectedPane.classList.remove('hidden');
+                setTimeout(() => {
+                    selectedPane.classList.add('active');
+                }, 50);
+
+                selectedButton.classList.add('active');
+                localStorage.setItem('activeAboutTab', tabName); // Save active tab
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Načíst preferovaný jazyk z Local Storage, nebo použít češtinu jako výchozí
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'cs';
+            setLanguage(savedLanguage);
+
+            // Získání elementů jazykového přepínače
+            const langToggleDesktop = document.getElementById('langToggleDesktop');
+            const langDropdownDesktop = document.getElementById('langDropdownDesktop');
+
+            // Posluchač pro kliknutí na tlačítko Jazyk/Language
+            if (langToggleDesktop && langDropdownDesktop) {
+                langToggleDesktop.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    langDropdownDesktop.classList.toggle('is-open');
+                    langToggleDesktop.classList.toggle('is-open');
+                });
+            }
+
+            // Posluchač pro kliknutí mimo dropdown k zavření
+            document.addEventListener('click', (event) => {
+                if (langDropdownDesktop && langToggleDesktop && !langDropdownDesktop.contains(event.target) && !langToggleDesktop.contains(event.target)) {
+                    langDropdownDesktop.classList.remove('is-open');
+                    langToggleDesktop.classList.remove('is-open');
+                }
+            });
+
+            // Nastavení posluchačů událostí pro tlačítka volby jazyka v dropdownu
+            document.querySelectorAll('.lang-option').forEach(button => {
+                button.addEventListener('click', () => {
+                    setLanguage(button.dataset.lang);
+                    if (langDropdownDesktop) langDropdownDesktop.classList.remove('is-open');
+                    if (langToggleDesktop) langToggleDesktop.classList.remove('is-open');
+                });
+            });
+
+            // JS pro animace při scrollu
+            const sections = document.querySelectorAll('.animate-on-scroll');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        // entry.target.classList.remove('is-visible'); // Optional: remove class when out of view
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // JS pro změnu navigace při scrollu
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('navbar-scrolled');
+                } else {
+                    navbar.classList.remove('navbar-scrolled');
+                }
+            });
+
+            const mainContentContainer = document.querySelector('.main-content-container');
+            if (mainContentContainer) {
+                mainContentContainer.classList.add('show');
+            }
+
+            // Funkce pro kreslení částic na canvasu
+            const particlesCanvas = document.getElementById('particles-js');
+            if (particlesCanvas) {
+                const ctx = particlesCanvas.getContext('2d');
+                let particles = [];
+                const numParticles = 80;
+                const particleSize = 2;
+                const particleSpeed = 0.5;
+
+                function setCanvasSize() {
+                    particlesCanvas.width = particlesCanvas.offsetWidth;
+                    particlesCanvas.height = particlesCanvas.offsetHeight;
+                }
+
+                class Particle {
+                    constructor() {
+                        this.x = Math.random() * particlesCanvas.width;
+                        this.y = Math.random() * particlesCanvas.height;
+                        this.size = Math.random() * particleSize + 1;
+                        this.speedX = Math.random() * particleSpeed - particleSpeed / 2;
+                        this.speedY = Math.random() * particleSpeed - particleSpeed / 2;
+                        this.color = `rgba(var(--gradient-start-rgb), ${Math.random() * 0.5 + 0.1})`; /* Fialové částice */
+                    }
+
+                    update() {
+                        this.x += this.speedX;
+                        this.y += this.speedY;
+
+                        if (this.x < 0 || this.x > particlesCanvas.width || this.y < 0 || this.y > particlesCanvas.height) {
+                            this.x = Math.random() * particlesCanvas.width;
+                            this.y = Math.random() * particlesCanvas.height;
+                        }
+                    }
+
+                    draw() {
+                        ctx.fillStyle = this.color;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                function initParticles() {
+                    // Extract RGB from CSS variable
+                    const rootStyles = getComputedStyle(document.documentElement);
+                    const gradientStart = rootStyles.getPropertyValue('--gradient-start');
+                    const [r, g, b] = gradientStart.match(/\d+/g).map(Number);
+                    document.documentElement.style.setProperty('--gradient-start-rgb', `${r}, ${g}, ${b}`);
+
+
+                    particles = [];
+                    for (let i = 0; i < numParticles; i++) {
+                        particles.push(new Particle());
+                    }
+                }
+
+                function animateParticles() {
+                    ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+                    for (let i = 0; i < particles.length; i++) {
+                        particles[i].update();
+                        particles[i].draw();
+
+                        for (let j = i; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+
+                            if (distance < 100) {
+                                ctx.strokeStyle = `rgba(var(--gradient-start-rgb), ${1 - (distance / 100)})`; /* Fialové spojnice */
+                                ctx.lineWidth = 0.5;
+                                ctx.beginPath();
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(animateParticles);
+                }
+
+                window.addEventListener('resize', () => {
+                    setCanvasSize();
+                    initParticles();
+                });
+
+                setCanvasSize();
+                initParticles();
+                animateParticles();
+            }
+
+            const pulseDots = document.querySelectorAll('.pulse-dot');
+            pulseDots.forEach(dot => dot.remove());
+
+            // Tab switching for About Me section
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    showAboutTab(button.dataset.tab);
+                });
+            });
+
+            // Load active tab on page load
+            const savedAboutTab = localStorage.getItem('activeAboutTab') || 'general';
+            showAboutTab(savedAboutTab);
+
+            // Ensure language switcher also updates tab content
+            const originalSetLanguage = setLanguage;
+            setLanguage = (lang) => {
+                originalSetLanguage(lang);
+                const currentActiveTab = localStorage.getItem('activeAboutTab') || 'general';
+                showAboutTab(currentActiveTab);
+            };
+        });
+    </script>
+</body>
+</html>
